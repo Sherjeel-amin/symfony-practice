@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Students;
 use App\Form\StudentsType;
-use Doctrine\ORM\EntityManagerInterface; // Include EntityManagerInterface to manage entity operations
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,8 +30,12 @@ class StudentController extends AbstractController
             $entityManager->persist($student);
             $entityManager->flush(); // Execute SQL INSERT query to save data
 
-            // Optionally, redirect to a success page or perform other actions
-            // return $this->redirectToRoute('students_success');
+            // Clear the form data by creating a new instance of Students
+            $student = new Students();
+            $form = $this->createForm(StudentsType::class, $student);
+
+            // Add a flash message for success
+            $this->addFlash('success', 'Student has been successfully added.');
         }
 
         // Render the form template with the form view and other variables
@@ -39,12 +43,5 @@ class StudentController extends AbstractController
             'controller_name' => 'StudentController',
             'form' => $form->createView(), // Create a view representation of the form to render in Twig template
         ]);
-    }
-
-    #[Route('/students/success', name: 'students_success')]
-    public function success(): Response
-    {
-        // Render a success page after successful form submission
-        return $this->render('student/success.html.twig');
     }
 }
